@@ -1,0 +1,44 @@
+{
+  "system": {
+    "name": "Global Traffic Direct Revenue Factory",
+    "version": "1.0.0",
+    "vault_path": "./"
+  },
+  "orchestrator": {
+    "model": "claude",
+    "role": "오케스트레이터 — 작업 분배, 품질 검증, KNOT 기억 관리",
+    "principles_file": "_templates/claude.md",
+    "entry_point": ".harness/main.py"
+  },
+  "workers": {
+    "codex": {
+      "model": "gpt-4-codex",
+      "task_types": ["BUILD_UTILITY_WEB"],
+      "description": "정적 HTML/JS 유틸리티 웹 빌더 (카파시 4원칙 주입)",
+      "output_path": "02_wiki/02A_products/"
+    },
+    "gemini": {
+      "model": "gemini-pro-vision",
+      "task_types": ["GENERATE_CARD_NEWS"],
+      "description": "비용 제로 카드뉴스·이미지 프롬프트 생산",
+      "output_path": "02_wiki/02B_social_assets/"
+    },
+    "linter": {
+      "model": "local",
+      "task_types": ["LINT_WEB"],
+      "description": "애드센스 정책 위반 및 링크 품질 자동 검사",
+      "script": "03_lint/lint_check.py"
+    }
+  },
+  "knot_paths": {
+    "inbox": "01_inbox",
+    "wiki": "02_wiki",
+    "lint": "03_lint",
+    "templates": "_templates"
+  },
+  "adsense_zones": {
+    "Top_Leaderboard": "728x90 — 헤더 하단",
+    "In-Article_Sticky": "336x280 — 본문 중간 고정",
+    "Aside_SkyScraper": "160x600 — 우측 사이드바"
+  }
+}

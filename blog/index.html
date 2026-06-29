@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Frontier — Karpathy · Anthropic 최신 인사이트</title>
+  <meta name="description" content="Andrej Karpathy와 Anthropic의 최신 AI 연구·발표를 한국어와 영어로 빠르게 해설합니다.">
+  <meta property="og:title" content="AI Frontier — Karpathy · Anthropic 인사이트">
+  <meta property="og:description" content="AI 최전선의 소식을 한/영으로 해설하는 블로그">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Google AdSense — 발급 후 data-ad-client 교체 -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "AI Frontier",
+    "description": "Andrej Karpathy와 Anthropic 최신 인사이트 한/영 해설 블로그",
+    "url": "https://ai-frontier.pages.dev",
+    "inLanguage": ["ko", "en"]
+  }
+  </script>
+</head>
+<body>
+
+<!-- ─── Header ─────────────────────────────────────── -->
+<header class="site-header">
+  <a href="index.html" class="site-title">AI <span>Frontier</span></a>
+  <nav>
+    <a href="#posts">Posts</a>
+    <a href="https://x.com/karpathy" target="_blank">Karpathy</a>
+    <a href="https://www.anthropic.com/news" target="_blank">Anthropic</a>
+  </nav>
+</header>
+
+<!-- ─── Top Leaderboard Ad ─────────────────────────── -->
+<div class="ad-leaderboard">
+  <!-- [Top_Leaderboard] 728×90 AdSense -->
+  <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto"></ins> -->
+  [Top_Leaderboard] AdSense 728×90
+</div>
+
+<!-- ─── Hero ───────────────────────────────────────── -->
+<main>
+  <section class="hero">
+    <h1>AI Frontier</h1>
+    <p>Andrej Karpathy · Anthropic의 최신 소식을<br>한국어와 영어로 빠르게 해설합니다.</p>
+    <div class="tag-filter">
+      <button class="tag-btn active" onclick="filterPosts('all')">All</button>
+      <button class="tag-btn karpathy" onclick="filterPosts('karpathy')">🧠 Karpathy</button>
+      <button class="tag-btn anthropic" onclick="filterPosts('anthropic')">🤖 Anthropic</button>
+      <button class="tag-btn news" onclick="filterPosts('news')">📰 AI News</button>
+    </div>
+  </section>
+
+  <!-- ─── Post Grid ────────────────────────────────── -->
+  <section id="posts" class="post-grid">
+
+    <!-- 샘플 카드 — 첫 포스트 발행 후 교체 -->
+    <article class="post-card" data-category="karpathy">
+      <div class="post-card-meta">
+        <span class="post-tag karpathy">Karpathy</span>
+        <span class="post-date">2026-06-29</span>
+        <span class="lang-badge">KO · EN</span>
+      </div>
+      <h2><a href="posts/first-post.html">첫 번째 포스트가 여기에 표시됩니다</a></h2>
+      <p>intel_collector.py가 오늘 수집한 내용을 바탕으로 Cursor에서 포스트를 작성한 뒤 이 목록에 추가하세요.</p>
+    </article>
+
+  </section>
+
+  <!-- ─── In-Article Ad ─────────────────────────────── -->
+  <div class="ad-in-article">
+    <!-- [In-Article_Sticky] 336×280 AdSense -->
+    <!-- <ins class="adsbygoogle" ...></ins> -->
+    [In-Article_Sticky] AdSense 336×280
+  </div>
+
+</main>
+
+<!-- ─── Footer ─────────────────────────────────────── -->
+<footer>
+  <p>AI Frontier · Powered by KNOT &amp; Harness Multi-Agent System · Hosted on Cloudflare Pages</p>
+  <p style="margin-top:8px"><a href="https://x.com/karpathy">@karpathy</a> · <a href="https://www.anthropic.com">Anthropic</a></p>
+</footer>
+
+<script>
+function filterPosts(category) {
+  document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  document.querySelectorAll('.post-card').forEach(card => {
+    if (category === 'all' || card.dataset.category === category) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+</script>
+
+</body>
+</html>

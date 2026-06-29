@@ -1,0 +1,31 @@
+# PDF 원본 (용량 크고 저작권 이슈)
+*.pdf
+
+# Obsidian 앱 실행파일 폴더 (exe, dll — 절대 올리면 안 됨)
+Obsidian/
+
+# Obsidian 작업 상태 캐시 (개인 설정)
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/plugins/
+.obsidian/.obsidian/
+!.obsidian/app.json
+!.obsidian/appearance.json
+
+# lint 임시 결과물
+03_lint/last_report.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# 로컬 환경변수 (API 키 등 절대 올리면 안 됨)
+.env
+*.env
+secrets.json

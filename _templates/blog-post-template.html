@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ─── SEO: 포스트마다 교체 ──────────────────── -->
+  <title>{{TITLE_KO}} | AI Frontier</title>
+  <meta name="description" content="{{META_DESC_KO}}">
+  <meta name="description" lang="en" content="{{META_DESC_EN}}">
+
+  <!-- hreflang: 한/영 동일 URL에서 두 언어 모두 인덱싱 -->
+  <link rel="alternate" hreflang="ko" href="{{POST_URL}}">
+  <link rel="alternate" hreflang="en" href="{{POST_URL}}">
+  <link rel="alternate" hreflang="x-default" href="{{POST_URL}}">
+
+  <meta property="og:title" content="{{TITLE_KO}}">
+  <meta property="og:description" content="{{META_DESC_KO}}">
+  <meta property="og:image" content="../assets/images/{{IMAGE_FILE}}">
+  <meta property="og:type" content="article">
+
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Google AdSense — 발급 후 교체 -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+
+  <!-- ─── 구조화 데이터 (Article) ──────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "{{TITLE_EN}}",
+    "description": "{{META_DESC_EN}}",
+    "image": "{{POST_URL_BASE}}/assets/images/{{IMAGE_FILE}}",
+    "datePublished": "{{DATE}}",
+    "dateModified": "{{DATE}}",
+    "author": {
+      "@type": "Organization",
+      "name": "AI Frontier"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "AI Frontier",
+      "url": "{{SITE_URL}}"
+    },
+    "inLanguage": ["ko", "en"],
+    "about": {
+      "@type": "Thing",
+      "name": "{{ABOUT_KEYWORD}}"
+    }
+  }
+  </script>
+</head>
+<body>
+
+<!-- ─── Header ─────────────────────────────────────────────── -->
+<header class="site-header">
+  <a href="../index.html" class="site-title">AI <span>Frontier</span></a>
+  <nav>
+    <a href="../index.html">← All Posts</a>
+  </nav>
+</header>
+
+<!-- ─── Top Leaderboard Ad ─────────────────────────────────── -->
+<div class="ad-leaderboard">
+  <!-- [Top_Leaderboard] 728×90 -->
+  <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script> -->
+  [Top_Leaderboard] AdSense 728×90
+</div>
+
+<!-- ─── Main Layout ─────────────────────────────────────────── -->
+<main>
+  <div class="post-layout">
+    <article>
+
+      <!-- 포스트 헤더 -->
+      <header class="post-header">
+        <span class="post-tag {{CATEGORY}}">{{CATEGORY_LABEL}}</span>
+        <h1 class="title-ko">{{TITLE_KO}}</h1>
+        <h1 class="title-en" style="display:none">{{TITLE_EN}}</h1>
+        <div class="byline">
+          <span>{{DATE}}</span>
+          <span>·</span>
+          <span>AI Frontier</span>
+        </div>
+      </header>
+
+      <!-- 언어 토글 -->
+      <div class="lang-toggle">
+        <button id="btn-ko" class="active" onclick="setLang('ko')">한국어</button>
+        <button id="btn-en" onclick="setLang('en')">English</button>
+      </div>
+
+      <!-- 헤더 이미지 -->
+      <img class="post-hero-img"
+           src="../assets/images/{{IMAGE_FILE}}"
+           alt="{{IMAGE_ALT_KO}}"
+           loading="lazy">
+
+      <!-- ─── 한국어 본문 ──────────────────────────── -->
+      <div id="content-ko" class="post-content">
+        <h2>{{SECTION1_H2_KO}}</h2>
+        <p>{{SECTION1_BODY_KO}}</p>
+
+        <!-- [In-Article_Sticky] AdSense — 본문 중간 -->
+        <div class="ad-in-article">
+          <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script> -->
+          [In-Article_Sticky] AdSense 336×280
+        </div>
+
+        <h2>{{SECTION2_H2_KO}}</h2>
+        <p>{{SECTION2_BODY_KO}}</p>
+
+        <h2>{{SECTION3_H2_KO}}</h2>
+        <p>{{SECTION3_BODY_KO}}</p>
+
+        <h2>{{SECTION4_H2_KO}}</h2>
+        <p>{{SECTION4_BODY_KO}}</p>
+      </div>
+
+      <!-- ─── English Body ────────────────────────── -->
+      <div id="content-en" class="post-content" style="display:none">
+        <h2>{{SECTION1_H2_EN}}</h2>
+        <p>{{SECTION1_BODY_EN}}</p>
+
+        <div class="ad-in-article">
+          [In-Article_Sticky] AdSense 336×280
+        </div>
+
+        <h2>{{SECTION2_H2_EN}}</h2>
+        <p>{{SECTION2_BODY_EN}}</p>
+
+        <h2>{{SECTION3_H2_EN}}</h2>
+        <p>{{SECTION3_BODY_EN}}</p>
+
+        <h2>{{SECTION4_H2_EN}}</h2>
+        <p>{{SECTION4_BODY_EN}}</p>
+      </div>
+
+      <!-- ─── Post Navigation ─────────────────────── -->
+      <nav class="post-nav">
+        <a href="{{PREV_POST_URL}}">
+          <div class="label">← Previous</div>
+          {{PREV_POST_TITLE}}
+        </a>
+        <a href="{{NEXT_POST_URL}}" style="text-align:right">
+          <div class="label">Next →</div>
+          {{NEXT_POST_TITLE}}
+        </a>
+      </nav>
+
+    </article>
+
+    <!-- ─── Aside Skyscraper Ad ─────────────────── -->
+    <aside>
+      <div class="ad-skyscraper" style="position:sticky;top:80px">
+        <!-- [Aside_SkyScraper] 160×600 -->
+        <!-- <ins class="adsbygoogle" ...></ins> -->
+        [Aside_SkyScraper]<br>160×600
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+<footer>
+  <p>AI Frontier · <a href="../index.html">All Posts</a> · Powered by KNOT Multi-Agent</p>
+</footer>
+
+<script>
+function setLang(lang) {
+  const isKo = lang === 'ko';
+  document.getElementById('content-ko').style.display = isKo ? '' : 'none';
+  document.getElementById('content-en').style.display = isKo ? 'none' : '';
+  document.querySelector('.title-ko').style.display = isKo ? '' : 'none';
+  document.querySelector('.title-en').style.display = isKo ? 'none' : '';
+  document.getElementById('btn-ko').classList.toggle('active', isKo);
+  document.getElementById('btn-en').classList.toggle('active', !isKo);
+  document.documentElement.lang = lang;
+  localStorage.setItem('preferred-lang', lang);
+}
+
+// 사용자 언어 기억
+(function() {
+  const saved = localStorage.getItem('preferred-lang');
+  const browser = navigator.language.startsWith('ko') ? 'ko' : 'en';
+  if (saved && saved !== 'ko') setLang(saved);
+  else if (!saved && browser !== 'ko') setLang('en');
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+name: 블로그 변경 감지 알림
+
+on:
+  push:
+    paths:
+      - "blog/**"
+    branches:
+      - main
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 블로그 업데이트 감지
+        run: |
+          echo "✅ blog/ 폴더 변경 감지"
+          echo "Cloudflare Pages가 자동으로 배포를 시작합니다."
+          echo "배포 현황: Cloudflare Pages 대시보드에서 확인하세요."
