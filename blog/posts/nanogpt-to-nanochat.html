@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nanoGPT is Dead. Long Live nanochat — What Karpathy's Pivot Means | AI Frontier</title>
+  <meta name="description" content="Karpathy deprecated nanoGPT and shipped nanochat. Here's what changed architecturally, why it matters for developers building with LLMs, and what to do next.">
+  <meta property="og:title" content="nanoGPT is Dead. Long Live nanochat — What Karpathy's Pivot Means">
+  <meta property="og:description" content="Karpathy deprecated nanoGPT and shipped nanochat. Here's what changed, why it matters, and what to do next.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://ai-frontier-eni.pages.dev/posts/nanogpt-to-nanochat.html">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Google AdSense — replace after approval -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "nanoGPT is Dead. Long Live nanochat — What Karpathy's Pivot Means",
+    "description": "Karpathy deprecated nanoGPT and shipped nanochat. Here's what changed architecturally, why it matters for developers building with LLMs, and what to do next.",
+    "author": { "@type": "Organization", "name": "AI Frontier" },
+    "datePublished": "2026-07-08",
+    "url": "https://ai-frontier-eni.pages.dev/posts/nanogpt-to-nanochat.html",
+    "publisher": {
+      "@type": "Organization",
+      "name": "AI Frontier",
+      "url": "https://ai-frontier-eni.pages.dev"
+    }
+  }
+  </script>
+</head>
+<body>
+
+<!-- ─── Header ─────────────────────────────────────── -->
+<header class="site-header">
+  <a href="../index.html" class="site-title">AI <span>Frontier</span></a>
+  <nav>
+    <a href="../index.html#posts">Posts</a>
+    <a href="https://x.com/karpathy" target="_blank">Karpathy</a>
+    <a href="https://www.anthropic.com/news" target="_blank">Anthropic</a>
+  </nav>
+</header>
+
+<!-- ─── Top Leaderboard Ad ─────────────────────────── -->
+<div class="ad-leaderboard">
+  <!-- [Top_Leaderboard] 728×90 AdSense -->
+</div>
+
+<!-- ─── Post Layout ────────────────────────────────── -->
+<main>
+  <div class="post-layout">
+    <article>
+      <header class="post-header">
+        <span class="post-tag karpathy">Karpathy</span>
+        <h1>nanoGPT is Dead. Long Live nanochat — What Karpathy's Pivot Means</h1>
+        <div class="byline">
+          <span>AI Frontier</span>
+          <span>·</span>
+          <span>July 8, 2026</span>
+          <span>·</span>
+          <span>5 min read</span>
+        </div>
+      </header>
+
+      <!-- ─── Post Content ──────────────────────── -->
+      <div class="post-content">
+
+        <p>
+          If you've been using <strong>nanoGPT</strong> as your go-to minimal GPT implementation for learning
+          and experimentation, you just got a deprecation notice. Andrej Karpathy committed a README update
+          to the nanoGPT repo announcing its deprecation and pointing developers toward a new project:
+          <strong>nanochat</strong>.
+        </p>
+
+        <p>
+          This isn't just a rename. It signals a meaningful shift in how Karpathy thinks about minimal
+          LLM codebases — and what "educational AI code" should look like in 2026.
+        </p>
+
+        <h2>What was nanoGPT?</h2>
+
+        <p>
+          Released in late 2022, nanoGPT became the canonical "start here" codebase for anyone who wanted
+          to understand transformer training from scratch. The core <code>train.py</code> fit in ~300 lines.
+          You could train a character-level GPT on Shakespeare in an afternoon on a single GPU.
+        </p>
+
+        <p>
+          It filled a gap that no other resource did: it was between "read the Attention Is All You Need paper"
+          and "clone a 100k-line production repo." Thousands of developers used it to build intuition about
+          how pretraining actually works.
+        </p>
+
+        <h2>What changed — and why nanochat?</h2>
+
+        <p>
+          The world moved on from pure pretraining. In 2026, the questions developers actually ask are:
+        </p>
+
+        <ul>
+          <li>How does instruction-following get trained into a model?</li>
+          <li>What does RLHF / RLAIF look like in minimal code?</li>
+          <li>How do you build a chat interface that maintains context correctly?</li>
+        </ul>
+
+        <p>
+          nanoGPT didn't answer any of these — it was designed to train a raw next-token predictor,
+          not a chat assistant. nanochat is built around the chat paradigm from the ground up:
+          system prompts, turn structure, and fine-tuning on conversation data are first-class citizens.
+        </p>
+
+        <blockquote>
+          "The README now explicitly tells you: if you want to understand modern LLMs as chat systems,
+          nanoGPT is the wrong starting point."
+        </blockquote>
+
+        <h2>What this means for developers</h2>
+
+        <p>
+          <strong>If you're learning:</strong> Switch your reading to nanochat. The core concepts
+          (attention, positional encoding, layer norm) are the same — but the scaffolding now reflects
+          how models are actually deployed and used today.
+        </p>
+
+        <p>
+          <strong>If you have existing nanoGPT forks:</strong> Your code still works. The repo isn't
+          deleted. But don't expect new issues or PRs to get attention — Karpathy's focus has moved.
+        </p>
+
+        <p>
+          <strong>If you're building on top of it:</strong> nanochat's architecture will be a cleaner
+          base for experimenting with things like DPO, RLHF datasets, and multi-turn context handling —
+          all of which are increasingly relevant if you're building Claude/GPT-based apps and want
+          to understand what's happening under the hood.
+        </p>
+
+        <!-- ─── In-Article Ad ──────────────────── -->
+        <div class="ad-in-article">
+          <!-- [In-Article_Sticky] 336×280 AdSense -->
+        </div>
+
+        <h2>The broader pattern</h2>
+
+        <p>
+          This is part of a consistent pattern in Karpathy's work: he builds the minimal version of
+          whatever the field is currently obsessed with. In 2022 it was "how do you train a GPT."
+          In 2026 it's "how do you build a chat model." Watch nanochat for the same clarity of
+          explanation applied to the alignment-adjacent training loop.
+        </p>
+
+        <p>
+          llm.c, his C-based LLM training codebase, is still active and is the place to go if raw
+          performance and low-level understanding is your goal. nanochat sits above it — pedagogically
+          closer to the product layer.
+        </p>
+
+        <h2>What to do right now</h2>
+
+        <ul>
+          <li>Star the nanochat repo and read the README end to end</li>
+          <li>If you have a nanoGPT tutorial or course, update your links</li>
+          <li>Watch Karpathy's X / GitHub for the first nanochat video — it will likely be the
+              "Zero to Hero" entry point for chat model training</li>
+        </ul>
+
+        <p>
+          The shift from nanoGPT to nanochat is a small commit. But it's Karpathy
+          telling you where the interesting problems are now.
+        </p>
+
+      </div>
+      <!-- ─── End Post Content ──────────────────── -->
+
+      <!-- ─── Post Nav ──────────────────────────── -->
+      <nav class="post-nav">
+        <div></div>
+        <a href="../index.html">
+          <div class="label">Back to</div>
+          All Posts →
+        </a>
+      </nav>
+
+    </article>
+
+    <!-- ─── Sidebar Skyscraper Ad ─────────────── -->
+    <aside>
+      <div class="ad-skyscraper">
+        <!-- [Aside_SkyScraper] 160×600 AdSense -->
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+<!-- ─── Footer ─────────────────────────────────────── -->
+<footer>
+  <p>AI Frontier · Practical insights for AI developers · Hosted on Cloudflare Pages</p>
+  <p style="margin-top:8px"><a href="https://x.com/karpathy">@karpathy</a> · <a href="https://www.anthropic.com">Anthropic</a> · <a href="https://github.com/geonchicshin-rgb/ai-frontier">GitHub</a></p>
+</footer>
+
+</body>
+</html>
