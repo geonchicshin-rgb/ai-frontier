@@ -6,10 +6,11 @@ import urllib.request
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.json")
 
 try:
-    import anthropic as _anthropic_sdk
-    _ANTHROPIC_AVAILABLE = True
+    from google import genai as _genai
+    from google.genai import types as _genai_types
+    _GEMINI_AVAILABLE = True
 except ImportError:
-    _ANTHROPIC_AVAILABLE = False
+    _GEMINI_AVAILABLE = False
 
 
 class HarnessOrchestrator:
@@ -22,10 +23,12 @@ class HarnessOrchestrator:
         self.vault_path = os.path.abspath(vault_path)
         self.config = self._load_config()
         self.system_principles = self._load_principles()
-        self.api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+        self.gcp_project  = os.environ.get("GCP_PROJECT_ID", "geonchicsproject")
+        self.gemini_model = os.environ.get("GEMINI_MODEL_NAME", "publishers/google/models/gemini-2.5-flash")
+        self.creds_path   = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "")
         print(f"[Harness] 오케스트레이터 초기화 완료 — Vault: {self.vault_path}")
-        if not self.api_key:
-            print("[Harness] 경고: ANTHROPIC_API_KEY 환경변수 없음 — 드래프트 생성 불가")
+        if not self.creds_path or not os.path.exists(self.creds_path):
+            print("[Harness] 경고: GCP 서비스 계정 키 없음 — GOOGLE_APPLICATION_CREDENTIALS 설정 필요")
 
     def _load_config(self) -> dict:
         if not os.path.exists(CONFIG_PATH):
@@ -79,27 +82,48 @@ class HarnessOrchestrator:
         return output_path
 
     # ──────────────────────────────────────────────────────────────
-    # Anthropic API 호출 (핵심 자동화)
+    # Gemini Vertex AI 호출 (janus agent와 동일한 인프라)
     # ──────────────────────────────────────────────────────────────
 
-    def _call_anthropic(self, prompt: str, max_tokens: int = 4096) -> str:
-        """Anthropic Claude API 호출. ANTHROPIC_API_KEY 환경변수 필수."""
-        if not self.api_key:
+    def _call_gemini(self, prompt: str, max_tokens: int = 4096) -> str:
+        """
+        GCP Vertex AI + Gemini 2.5 Flash 호출.
+        janus agent의 gcp-key.json / GCP_PROJECT_ID와 동일한 인프라 사용.
+        GOOGLE_APPLICATION_CREDENTIALS 환경변수로 서비스 계정 키 경로 지정.
+        """
+        if not _GEMINI_AVAILABLE:
             raise RuntimeError(
-                "ANTHROPIC_API_KEY 환경변수를 설정하세요.\n"
-                "GitHub Actions: Settings → Secrets → ANTHROPIC_API_KEY"
+                "google-genai 패키지 없음.\n"
+                "pip install google-genai google-auth 실행 후 재시도하세요."
             )
-        if not _ANTHROPIC_AVAILABLE:
-            raise RuntimeError(
-                "anthropic 패키지 없음. pip install anthropic 실행 후 재시도하세요."
+        if self.creds_path and os.path.exists(self.creds_path):
+            from google.oauth2 import service_account as _sa
+            creds = _sa.Credentials.from_service_account_file(
+                self.creds_path,
+                scopes=["https://www.googleapis.com/auth/cloud-platform"],
             )
-        client = _anthropic_sdk.Anthropic(api_key=self.api_key)
-        message = client.messages.create(
-            model="claude-opus-4-5",
-            max_tokens=max_tokens,
-            messages=[{"role": "user", "content": prompt}],
+            client = _genai.Client(
+                vertexai=True,
+                project=self.gcp_project,
+                location="us-central1",
+                credentials=creds,
+            )
+        else:
+            # ADC 폴백 (로컬 gcloud auth application-default login 환경)
+            client = _genai.Client(
+                vertexai=True,
+                project=self.gcp_project,
+                location="us-central1",
+            )
+        response = client.models.generate_content(
+            model=self.gemini_model,
+            contents=prompt,
+            config=_genai_types.GenerateContentConfig(
+                max_output_tokens=max_tokens,
+                temperature=0.3,
+            ),
         )
-        return message.content[0].text
+        return response.text
 
     # ──────────────────────────────────────────────────────────────
     # 워크플로우 진입점
@@ -174,7 +198,7 @@ DATE: {datetime.date.today().isoformat()}
 """
 
         try:
-            html_fragment = self._call_anthropic(prompt)
+            html_fragment = self._call_gemini(prompt)
         except Exception as e:
             print(f"[오류] API 호출 실패: {e}")
             return f"DRAFT_FAILED: {e}"

@@ -1,11 +1,9 @@
 name: 블로그 초안 자동 생성
 
 on:
-  # 인텔 수집 워크플로우 완료 후 자동 실행
   workflow_run:
     workflows: ["AI 인텔 일일 수집 + 블로그 자동 배포"]
     types: [completed]
-  # 수동 실행도 가능
   workflow_dispatch:
     inputs:
       topic:
@@ -16,7 +14,6 @@ on:
 jobs:
   generate-draft:
     runs-on: ubuntu-latest
-    # 인텔 수집이 성공한 경우에만 실행
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: write
@@ -31,12 +28,18 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: anthropic 패키지 설치
-        run: pip install anthropic
+      - name: 의존 패키지 설치
+        run: pip install google-genai google-auth python-dotenv
+
+      - name: GCP 서비스 계정 키 복원
+        # GitHub Secret 'GCP_SA_KEY' 에 gcp-key.json 내용을 base64 인코딩해서 저장
+        run: |
+          echo "${{ secrets.GCP_SA_KEY }}" | base64 -d > /tmp/gcp-key.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-key.json" >> $GITHUB_ENV
+          echo "GCP_PROJECT_ID=geonchicsproject" >> $GITHUB_ENV
+          echo "GEMINI_MODEL_NAME=publishers/google/models/gemini-2.5-flash" >> $GITHUB_ENV
 
       - name: 블로그 초안 생성
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           TOPIC="${{ github.event.inputs.topic || 'anthropic' }}"
           python -c "
@@ -59,7 +62,6 @@ jobs:
           git config user.name  "KNOT Draft Bot"
           git config user.email "bot@ai-frontier"
 
-          # 변경사항 있을 때만 PR 생성
           if git diff --quiet && git diff --staged --quiet; then
             echo "생성된 초안 없음 — 종료"
             exit 0
