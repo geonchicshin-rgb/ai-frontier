@@ -14,11 +14,11 @@ updated: 2026-06-29
 | 구성 요소 | 상태 | 비고 |
 |---|---|---|
 | KNOT Vault (Obsidian) | ✅ 가동 중 | `따라해보자고/` 폴더 |
-| GitHub 저장소 | ⬜ 설정 필요 | [[SETUP-GUIDE]] 참고 |
-| Obsidian Git 플러그인 | ⬜ 설정 필요 | GitHub 연동 후 설치 |
-| GitHub Actions (인텔 수집) | ⬜ 설정 필요 | GitHub 업로드 후 자동 활성화 |
-| Cloudflare Pages (블로그) | ⬜ 설정 필요 | GitHub 연동 후 5분 |
-| Google AdSense | ⬜ 신청 전 | 블로그 배포 후 신청 |
+| GitHub 저장소 | ✅ 완료 | github.com/geonchicshin-rgb/ai-frontier |
+| Obsidian Git 플러그인 | ✅ 완료 | Auto pull 30분, Pull on startup 켜짐 |
+| GitHub Actions (인텔 수집) | ✅ 가동 중 | 매일 오전 8시 자동 실행, 6.29~7.8 보고서 생성 완료 |
+| Cloudflare Pages (블로그) | ⬜ 내일 진행 | pages.cloudflare.com 가입 후 연결 |
+| Google AdSense | ⬜ 대기 중 | Cloudflare 연결 후 신청 |
 
 ---
 
@@ -78,10 +78,11 @@ updated: 2026-06-29
 ## 🗓️ 이번 주 마스터 체크리스트
 
 ### 1회성 설정 (처음 한 번만)
-- [ ] GitHub Desktop 설치 및 저장소 생성 → [[SETUP-GUIDE#step1]]
-- [ ] Obsidian Git 플러그인 설치 → [[SETUP-GUIDE#step2]]
-- [ ] Cloudflare Pages 연결 → [[SETUP-GUIDE#step3]]
-- [ ] GitHub Actions 인텔 수집 첫 수동 실행 확인 → [[SETUP-GUIDE#step4]]
+- [x] GitHub 저장소 생성 및 코드 업로드 ✅ 2026-06-29
+- [x] Obsidian Git 플러그인 설치 ✅ 2026-07-08
+- [x] GitHub Actions 인텔 수집 첫 실행 확인 ✅ 2026-07-08
+- [ ] **⭐ 내일 할 것 — Cloudflare Pages 연결** → [[SETUP-GUIDE#step3]]
+- [ ] 첫 번째 블로그 포스트 작성 (소재: nanoGPT → nanochat)
 
 ### 매일 반복
 - [ ] `01_inbox/intel-오늘날짜` 확인 (자동 생성)

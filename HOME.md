@@ -4,14 +4,14 @@
 
 ## ⚡ 시스템 상태
 
-| 구성 요소 | 상태 |
-|---|---|
-| KNOT Vault (Obsidian) | ✅ 가동 중 |
-| GitHub 저장소 | ⬜ [[02_wiki/SETUP-GUIDE#step1\|설정 필요]] |
-| Obsidian Git 자동 동기화 | ⬜ [[02_wiki/SETUP-GUIDE#step2\|설정 필요]] |
-| GitHub Actions 인텔 수집 | ⬜ [[02_wiki/SETUP-GUIDE#step4\|설정 필요]] |
-| Cloudflare Pages 블로그 | ⬜ [[02_wiki/SETUP-GUIDE#step3\|설정 필요]] |
-| Google AdSense | ⬜ 블로그 배포 후 신청 |
+| 구성 요소                 | 상태                                     |
+| --------------------- | -------------------------------------- |
+| KNOT Vault (Obsidian) | ✅ 가동 중                                 |
+| GitHub 저장소            | ⬜ [[02_wiki/SETUP-GUIDE#step1\|설정 필요]] |
+| Obsidian Git 자동 동기화   | ⬜ [[02_wiki/SETUP-GUIDE#step2\|설정 필요]] |
+| GitHub Actions 인텔 수집  | ⬜ [[02_wiki/SETUP-GUIDE#step4\|설정 필요]] |
+| Cloudflare Pages 블로그  | ⬜ [[02_wiki/SETUP-GUIDE#step3\|설정 필요]] |
+| Google AdSense        | ⬜ 블로그 배포 후 신청                          |
 
 ---
 
