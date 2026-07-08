@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       topic:
-        description: '초안 생성 토픽 (anthropic / karpathy / news)'
+        description: '토픽 (anthropic / karpathy / news / tools)'
         required: false
         default: 'anthropic'
 
@@ -28,18 +28,22 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: 의존 패키지 설치
-        run: pip install google-genai google-auth python-dotenv
+      - name: 패키지 설치
+        run: pip install google-genai google-auth anthropic
 
       - name: GCP 서비스 계정 키 복원
-        # GitHub Secret 'GCP_SA_KEY' 에 gcp-key.json 내용을 base64 인코딩해서 저장
+        # GitHub Secret 'GCP_SA_KEY' = AI office/credentials/agent-office.json 의 base64 인코딩 값
         run: |
-          echo "${{ secrets.GCP_SA_KEY }}" | base64 -d > /tmp/gcp-key.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-key.json" >> $GITHUB_ENV
-          echo "GCP_PROJECT_ID=geonchicsproject" >> $GITHUB_ENV
-          echo "GEMINI_MODEL_NAME=publishers/google/models/gemini-2.5-flash" >> $GITHUB_ENV
+          echo "${{ secrets.GCP_SA_KEY }}" | base64 -d > /tmp/agent-office.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/agent-office.json" >> $GITHUB_ENV
+          echo "GCP_PROJECT_ID=ai-transfer-center-495006"              >> $GITHUB_ENV
+          echo "GCP_LOCATION=global"                                    >> $GITHUB_ENV
+          echo "GEMINI_MODEL_NAME=gemini-3.5-flash"                    >> $GITHUB_ENV
+          echo "CLAUDE_MODEL=claude-sonnet-4-6"                        >> $GITHUB_ENV
 
-      - name: 블로그 초안 생성
+      - name: 블로그 초안 생성 (Gemini Stage1 + Claude Stage2)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           TOPIC="${{ github.event.inputs.topic || 'anthropic' }}"
           python -c "
@@ -49,7 +53,7 @@ jobs:
           from main import HarnessOrchestrator
           o = HarnessOrchestrator(vault_path='.')
           result = o.execute_workflow('GENERATE_DRAFT', '$TOPIC')
-          print('DRAFT_PATH=' + str(result))
+          print('Result:', result)
           "
 
       - name: 생성된 초안으로 PR 생성
@@ -62,25 +66,28 @@ jobs:
           git config user.name  "KNOT Draft Bot"
           git config user.email "bot@ai-frontier"
 
-          if git diff --quiet && git diff --staged --quiet; then
+          # 변경사항이 없으면 종료
+          git add blog/drafts/ 03_drafts/
+          if git diff --cached --quiet; then
             echo "생성된 초안 없음 — 종료"
             exit 0
           fi
 
           git checkout -b "$BRANCH"
-          git add blog/drafts/
-          git commit -m "🤖 Draft: 자동 생성 초안 ${DATE}"
+          git commit -m "🤖 Draft ${DATE}: Gemini(작가) + Claude(편집장) 자동 생성"
           git push origin "$BRANCH"
 
           gh pr create \
-            --title "📝 [검수 필요] 자동 생성 초안 ${DATE}" \
-            --body "## 검수 체크리스트
-          - [ ] 사실 확인 (링크 및 날짜 검증)
-          - [ ] 제목 및 메타 디스크립션 검토
-          - [ ] 코드 스니펫 정확성 확인
-          - [ ] 어조 및 가독성 확인
-          - [ ] blog/index.html 포스트 카드 추가
+            --title "📝 [검수 필요] 블로그 초안 ${DATE}" \
+            --body "## 검수 절차
+          1. Obsidian에서 \`03_drafts/\` 폴더 확인 (30분 내 자동 동기화)
+          2. VERIFY 항목 사실 확인
+          3. \`blog/drafts/\` HTML 파일을 \`blog/posts/\`로 이동
+          4. \`blog/index.html\` 포스트 카드 추가
+          5. \`04_published/index.md\`에 발행 이력 기록
+          6. PR Merge → Cloudflare 자동 배포
 
-          검수 완료 후 blog/drafts/ → blog/posts/ 로 파일 이동하고 Merge 하세요." \
+          **Stage 1:** Gemini 3.5 Flash (ai-transfer-center-495006)
+          **Stage 2:** Claude Sonnet 4.6 (Anthropic)" \
             --base main \
             --head "$BRANCH"
