@@ -155,81 +155,158 @@ class HarnessOrchestrator:
             raise ValueError(f"알 수 없는 task_type: {task_type}")
 
     # ──────────────────────────────────────────────────────────────
-    # Worker: 블로그 초안 자동 생성 (핵심)
+    # Worker: 블로그 초안 자동 생성 — 2단계 파이프라인
+    # Stage 1: Gemini (작가) → 원시 초안
+    # Stage 2: Gemini (편집장) → 품질 검토 및 개선
     # ──────────────────────────────────────────────────────────────
 
     def _generate_draft(self, topic: str, shared_ctx: str, intel_ctx: str) -> str:
         """
-        수집된 인텔을 바탕으로 블로그 포스트 HTML 초안을 생성하고
-        blog/drafts/ 에 저장합니다. 사람이 검수 후 blog/posts/ 로 이동.
+        2단계 파이프라인으로 블로그 초안을 생성합니다.
+        Stage 1 (작가): 인텔 기반 원시 초안 작성
+        Stage 2 (편집장): SEO·팩트·어조 검토 후 최종본 출력
+        결과물은 blog/drafts/ 에 저장되며, 사람 검수 후 blog/posts/ 로 이동.
         """
-        print("[Harness Worker] ▶ Claude — 블로그 초안 생성 중...")
+        today = datetime.date.today().isoformat()
 
-        prompt = f"""You are an expert AI content writer for "AI Frontier" blog.
-Target audience: English-speaking AI developers who follow Karpathy and Anthropic.
-Tone: Technical but accessible. No fluff. Lead with what matters.
+        # ── Stage 1: 작가 — 원시 초안 ──────────────────────────
+        print("\n[Stage 1 / 2] ▶ Gemini (작가) — 원시 초안 생성 중...")
 
-System principles:
-{self.system_principles}
+        writer_prompt = f"""You are a sharp AI content writer for "AI Frontier" — a blog for English-speaking AI developers who follow Karpathy and Anthropic.
 
-Latest intel report (today's RSS collection):
+TODAY'S INTEL (RSS collection):
 {intel_ctx[:3000]}
 
-Shared context for topic "{topic}":
-{shared_ctx[:1000]}
+CONTEXT for topic "{topic}":
+{shared_ctx[:800]}
 
-Task:
-Write a complete, publication-ready blog post HTML fragment (NOT a full HTML document — just the <article> inner content) about the most interesting item related to "{topic}" from the intel report above.
+TASK:
+Pick the single most interesting/relevant item from the intel above related to "{topic}" and write a blog post HTML fragment about it.
 
-Requirements:
-- Title: under 65 chars, include a power keyword
-- 600–900 words
-- Structure: Lead (hook) → Context → What happened → What it means for developers → Takeaway
-- Include at least one code snippet or concrete example if relevant
-- End with a 1-sentence CTA linking back to the home page
-- Output ONLY the raw HTML fragment, no markdown, no explanation
+REQUIREMENTS:
+- HTML fragment only (no <html>/<head>/<body> tags — just inner article content)
+- Title: under 65 chars with a strong keyword
+- Length: 600–900 words
+- Structure: Hook → Background → What happened → Developer impact → Takeaway + CTA
+- Include a code example or concrete numbers if the source material supports it
+- Tone: direct, technical but readable. Zero fluff.
+- CTA last line: link back to <a href="../index.html">AI Frontier</a>
 
-Also output at the very end, separated by ---META---:
-SLUG: (url-friendly filename, e.g. anthropic-sdk-0116-agent-memory)
-TITLE: (full post title)
-DESCRIPTION: (meta description, under 155 chars)
+OUTPUT FORMAT — two sections separated by ---META---:
+
+[HTML fragment here]
+
+---META---
+SLUG: url-friendly-slug-here
+TITLE: Full Post Title Here
+DESCRIPTION: Meta description under 155 chars
 CATEGORY: karpathy | anthropic | news | tools
-DATE: {datetime.date.today().isoformat()}
+DATE: {today}
+SOURCE_URL: (original link from intel if available)
 """
 
         try:
-            html_fragment = self._call_gemini(prompt)
+            stage1_output = self._call_gemini(writer_prompt, max_tokens=3000)
+            print("[Stage 1] 완료 ✓")
         except Exception as e:
-            print(f"[오류] API 호출 실패: {e}")
-            return f"DRAFT_FAILED: {e}"
+            print(f"[Stage 1 오류] {e}")
+            return f"DRAFT_FAILED_STAGE1: {e}"
 
-        # META 블록 파싱
-        meta = {"slug": topic, "title": topic, "description": "", "category": "news",
-                "date": datetime.date.today().isoformat()}
-        if "---META---" in html_fragment:
-            content_part, meta_part = html_fragment.split("---META---", 1)
-            html_fragment = content_part.strip()
-            for line in meta_part.strip().splitlines():
+        # META 파싱
+        meta = {"slug": topic, "title": topic, "description": "",
+                "category": "news", "date": today, "source_url": ""}
+        if "---META---" in stage1_output:
+            raw_html, meta_block = stage1_output.split("---META---", 1)
+            raw_html = raw_html.strip()
+            for line in meta_block.strip().splitlines():
                 if ":" in line:
                     k, v = line.split(":", 1)
                     meta[k.strip().lower()] = v.strip()
         else:
-            content_part = html_fragment
+            raw_html = stage1_output.strip()
 
-        # 초안을 blog/drafts/ 에 저장
-        draft_path = self._save_draft(html_fragment, meta)
-        print(f"[Harness] 초안 저장 완료: {draft_path}")
-        print("[검수 필요] blog/drafts/ 폴더에서 내용을 확인하고 blog/posts/ 로 이동하세요.")
+        # ── Stage 2: 편집장 — 품질 검토 및 개선 ───────────────
+        print("\n[Stage 2 / 2] ▶ Gemini (편집장) — 품질 검토 및 개선 중...")
+
+        editor_prompt = f"""You are a strict editorial AI for "AI Frontier" blog.
+Your job: review the draft below and output an improved, publication-ready version.
+
+EDITORIAL CHECKLIST (fix all issues silently — do NOT explain changes):
+1. SEO: Title must be under 65 chars and include the primary keyword. Meta description under 155 chars.
+2. Factual flags: Add an HTML comment <!-- VERIFY: ... --> next to any claim that needs human fact-checking (dates, version numbers, quotes).
+3. Tone: Remove any marketing fluff. Every sentence must earn its place.
+4. Structure: Hook in the first 2 sentences. Clear H2 sections. Takeaway is specific, not generic.
+5. Code: If a code snippet is present, ensure it is syntactically plausible. If not present but would strengthen the post, add a short illustrative example.
+6. AdSense policy: No excessive external links, no clickbait titles, no misleading claims.
+7. CTA: Exactly one call-to-action at the end linking to ../index.html.
+
+DRAFT TO REVIEW:
+{raw_html}
+
+ORIGINAL META:
+Title: {meta.get('title')}
+Description: {meta.get('description')}
+Category: {meta.get('category')}
+
+OUTPUT FORMAT — same two-section format:
+
+[Improved HTML fragment]
+
+---META---
+SLUG: {meta.get('slug')}
+TITLE: (keep or improve)
+DESCRIPTION: (keep or improve, under 155 chars)
+CATEGORY: {meta.get('category')}
+DATE: {today}
+SOURCE_URL: {meta.get('source_url', '')}
+EDITOR_NOTES: (1–3 bullet points of what was changed or flagged for human review)
+"""
+
+        try:
+            stage2_output = self._call_gemini(editor_prompt, max_tokens=3500)
+            print("[Stage 2] 완료 ✓")
+        except Exception as e:
+            print(f"[Stage 2 오류] {e} — Stage 1 결과물을 저장합니다.")
+            stage2_output = stage1_output  # 편집 실패 시 Stage 1 결과 사용
+
+        # Stage 2 META 파싱
+        if "---META---" in stage2_output:
+            final_html, final_meta_block = stage2_output.split("---META---", 1)
+            final_html = final_html.strip()
+            for line in final_meta_block.strip().splitlines():
+                if ":" in line:
+                    k, v = line.split(":", 1)
+                    key = k.strip().lower()
+                    if key == "editor_notes":
+                        meta["editor_notes"] = v.strip()
+                    else:
+                        meta[key] = v.strip()
+        else:
+            final_html = stage2_output.strip()
+
+        # 편집장 노트 출력
+        if meta.get("editor_notes"):
+            print(f"\n[편집장 노트]\n{meta['editor_notes']}\n")
+
+        # 최종 초안 저장
+        draft_path = self._save_draft(final_html, meta)
+        print(f"\n[Harness] ✅ 최종 초안 저장: {draft_path}")
+        print("[검수 필요] blog/drafts/ 에서 내용을 확인하고 blog/posts/ 로 이동하세요.")
         return draft_path
 
     def _save_draft(self, html_fragment: str, meta: dict) -> str:
-        """초안을 blog/drafts/ 에 전체 HTML로 감싸서 저장"""
+        """초안을 blog/drafts/ 에 전체 HTML로 감싸서 저장. 편집장 노트 포함."""
         drafts_dir = os.path.join(self.vault_path, "blog", "drafts")
         os.makedirs(drafts_dir, exist_ok=True)
 
         slug = meta.get("slug", "draft")
         filename = f"{meta['date']}-{slug}.html"
         output_path = os.path.join(drafts_dir, filename)
+
+        # 편집장 노트를 HTML 주석으로 삽입
+        if meta.get("editor_notes"):
+            editor_comment = f"\n<!-- EDITOR NOTES\n{meta['editor_notes']}\n-->\n"
+            html_fragment = editor_comment + html_fragment
 
         # blog-post-template.html 로드
         template_path = os.path.join(self.vault_path, "_templates", "blog-post-template.html")
