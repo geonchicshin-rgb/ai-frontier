@@ -40,10 +40,10 @@ class HarnessOrchestrator:
         self.config = self._load_config()
         self.system_principles = self._load_principles()
 
-        # AI office 기준 GCP 설정
+        # AI office 기준 GCP 설정 (test_vertex.py 확인 값)
         self.gcp_project  = os.environ.get("GCP_PROJECT_ID", "ai-transfer-center-495006")
-        self.gcp_location = os.environ.get("GCP_LOCATION", "global")
-        self.gemini_model = os.environ.get("GEMINI_MODEL_NAME", "gemini-3.5-flash")
+        self.gcp_location = os.environ.get("GCP_LOCATION", "us-central1")   # global은 Vertex AI 미지원
+        self.gemini_model = os.environ.get("GEMINI_MODEL_NAME", "gemini-2.5-flash")  # 3.5는 존재하지 않음
         self.creds_path   = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "")
 
         # Claude 설정 (AI office 동일)

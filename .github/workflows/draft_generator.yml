@@ -37,8 +37,8 @@ jobs:
           echo "${{ secrets.GCP_SA_KEY }}" | base64 -d > /tmp/agent-office.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/agent-office.json" >> $GITHUB_ENV
           echo "GCP_PROJECT_ID=ai-transfer-center-495006"              >> $GITHUB_ENV
-          echo "GCP_LOCATION=global"                                    >> $GITHUB_ENV
-          echo "GEMINI_MODEL_NAME=gemini-3.5-flash"                    >> $GITHUB_ENV
+          echo "GCP_LOCATION=us-central1"                              >> $GITHUB_ENV
+          echo "GEMINI_MODEL_NAME=gemini-2.5-flash"                    >> $GITHUB_ENV
           echo "CLAUDE_MODEL=claude-sonnet-4-6"                        >> $GITHUB_ENV
 
       - name: 블로그 초안 생성 (Gemini Stage1 + Claude Stage2)
