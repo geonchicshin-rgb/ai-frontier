@@ -17,8 +17,8 @@ updated: 2026-06-29
 | GitHub 저장소 | ✅ 완료 | github.com/geonchicshin-rgb/ai-frontier |
 | Obsidian Git 플러그인 | ✅ 완료 | Auto pull 30분, Pull on startup 켜짐 |
 | GitHub Actions (인텔 수집) | ✅ 가동 중 | 매일 오전 8시 자동 실행, 6.29~7.8 보고서 생성 완료 |
-| Cloudflare Pages (블로그) | ⬜ 내일 진행 | pages.cloudflare.com 가입 후 연결 |
-| Google AdSense | ⬜ 대기 중 | Cloudflare 연결 후 신청 |
+| Cloudflare Pages (블로그) | ✅ 가동 중 | https://ai-frontier-eni.pages.dev |
+| Google AdSense | ⬜ 신청 가능 | Cloudflare 연결 완료 — 포스트 1개 후 신청 |
 
 ---
 
@@ -30,7 +30,7 @@ updated: 2026-06-29
 |---|---|
 | 블로그 홈 | ✅ `blog/index.html` 완성 |
 | 포스트 템플릿 | ✅ `_templates/blog-post-template.html` |
-| 배포 URL | ⬜ (Cloudflare Pages 설정 후 기입) |
+| 배포 URL | ✅ https://ai-frontier-eni.pages.dev |
 | 총 발행 포스트 수 | 0 |
 | 월간 방문자 | 0 |
 | AdSense 월수익 | $0 |
@@ -81,7 +81,7 @@ updated: 2026-06-29
 - [x] GitHub 저장소 생성 및 코드 업로드 ✅ 2026-06-29
 - [x] Obsidian Git 플러그인 설치 ✅ 2026-07-08
 - [x] GitHub Actions 인텔 수집 첫 실행 확인 ✅ 2026-07-08
-- [ ] **⭐ 내일 할 것 — Cloudflare Pages 연결** → [[SETUP-GUIDE#step3]]
+- [x] **Cloudflare Pages 연결 완료** ✅ 2026-07-08 → https://ai-frontier-eni.pages.dev
 - [ ] 첫 번째 블로그 포스트 작성 (소재: nanoGPT → nanochat)
 
 ### 매일 반복
