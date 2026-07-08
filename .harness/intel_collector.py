@@ -12,6 +12,12 @@ import urllib.request
 import xml.etree.ElementTree as ET
 
 RSS_SOURCES = [
+    # ── Karpathy ──────────────────────────────────────────────────
+    {
+        "name": "Karpathy YouTube",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCPk8m_r6fkUSYmvgCBwq-sw",
+        "category": "karpathy",
+    },
     {
         "name": "Karpathy - llm.c 커밋",
         "url": "https://github.com/karpathy/llm.c/commits/master.atom",
@@ -21,6 +27,17 @@ RSS_SOURCES = [
         "name": "Karpathy - nanoGPT 커밋",
         "url": "https://github.com/karpathy/nanoGPT/commits/master.atom",
         "category": "karpathy",
+    },
+    # ── Anthropic ─────────────────────────────────────────────────
+    {
+        "name": "Anthropic News",
+        "url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_news.xml",
+        "category": "anthropic",
+    },
+    {
+        "name": "Anthropic Engineering Blog",
+        "url": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic_engineering.xml",
+        "category": "anthropic",
     },
     {
         "name": "Anthropic - anthropic-cookbook 커밋",
@@ -32,10 +49,27 @@ RSS_SOURCES = [
         "url": "https://github.com/anthropics/anthropic-sdk-python/releases.atom",
         "category": "anthropic",
     },
+    # ── AI 뉴스 ───────────────────────────────────────────────────
+    {
+        "name": "OpenAI News",
+        "url": "https://openai.com/news/rss.xml",
+        "category": "news",
+    },
+    {
+        "name": "Ahead of AI (Sebastian Raschka)",
+        "url": "https://magazine.sebastianraschka.com/feed",
+        "category": "news",
+    },
     {
         "name": "Simon Willison (AI 뉴스 큐레이터)",
         "url": "https://simonwillison.net/atom/everything/",
         "category": "news",
+    },
+    # ── AI 도구 ───────────────────────────────────────────────────
+    {
+        "name": "Hugging Face Blog",
+        "url": "https://huggingface.co/blog/feed.xml",
+        "category": "tools",
     },
     {
         "name": "LangChain 릴리즈",
@@ -60,21 +94,32 @@ def parse_atom(xml_text: str, max_items: int = 3) -> list:
     try:
         root = ET.fromstring(xml_text)
         ns = "http://www.w3.org/2005/Atom"
+        media_ns = "http://search.yahoo.com/mrss/"
+
         for entry in root.findall(f"{{{ns}}}entry")[:max_items]:
             title_el = entry.find(f"{{{ns}}}title")
             link_el = entry.find(f"{{{ns}}}link")
-            updated_el = entry.find(f"{{{ns}}}updated")
-            summary_el = entry.find(f"{{{ns}}}summary") or entry.find(f"{{{ns}}}content")
+            # updated 없으면 published 로 폴백 (YouTube, HuggingFace 등)
+            date_el = (
+                entry.find(f"{{{ns}}}updated")
+                or entry.find(f"{{{ns}}}published")
+            )
+            # summary → content → media:description 순으로 폴백
+            summary_el = (
+                entry.find(f"{{{ns}}}summary")
+                or entry.find(f"{{{ns}}}content")
+                or entry.find(f"{{{media_ns}}}group/{{{media_ns}}}description")
+            )
 
             title = (title_el.text or "(제목 없음)").strip() if title_el is not None else "(제목 없음)"
             link = link_el.get("href", "") if link_el is not None else ""
-            updated = (updated_el.text or "")[:10] if updated_el is not None else ""
+            date = (date_el.text or "")[:10] if date_el is not None else ""
             summary = ""
             if summary_el is not None and summary_el.text:
                 raw = summary_el.text.strip()
                 summary = raw[:250].replace("\n", " ") + ("..." if len(raw) > 250 else "")
 
-            items.append({"title": title, "link": link, "date": updated, "summary": summary})
+            items.append({"title": title, "link": link, "date": date, "summary": summary})
     except Exception as e:
         print(f"  [파싱 오류] {e}")
     return items
